@@ -1,0 +1,16 @@
+name: ci-discord
+on: [push]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    env:
+      DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+    steps:
+      - name: Nachricht an Discord (Start)
+        run: |
+          curl -H "Content-Type: application/json" \
+          -X POST \
+          -d '{"content":"CI Workflow gestartet"}' \
+          $DISCORD_WEBHOOK_URL
