@@ -16,14 +16,14 @@ jobs:
                "$DISCORD_WEBHOOK_URL"
 
       - name: Erfolgreicher Dummy-Schritt
-        run: echo "✅ Alles funktioniert"
+        run: echo "Alles funktioniert"
 
       - name: Nachricht an Discord (Erfolg)
         if: ${{ success() }}
         run: |
           curl -H "Content-Type: application/json" \
                -X POST \
-               -d '{"content":"✅ CI Workflow erfolgreich abgeschlossen"}' \
+               -d '{"content":"CI Workflow erfolgreich abgeschlossen"}' \
                "$DISCORD_WEBHOOK_URL"
 
       - name: Nachricht an Discord (Fehler)
@@ -31,5 +31,5 @@ jobs:
         run: |
           curl -H "Content-Type: application/json" \
                -X POST \
-               -d '{"content":"❌ CI Workflow fehlgeschlagen"}' \
+               -d '{"content":"CI Workflow fehlgeschlagen"}' \
                "$DISCORD_WEBHOOK_URL"
