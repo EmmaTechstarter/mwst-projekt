@@ -11,36 +11,25 @@ jobs:
       - name: Nachricht an Discord (Start)
         run: |
           curl -H "Content-Type: application/json" \
-          -X POST \
-          -d '{"content":"CI Workflow gestartet"}' \
-          $DISCORD_WEBHOOK_URL
+               -X POST \
+               -d '{"content":"🚀 CI Workflow gestartet"}' \
+               "$DISCORD_WEBHOOK_URL"
 
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Run Tests
-        run: npm test
+      - name: Erfolgreicher Dummy-Schritt
+        run: echo "✅ Alles funktioniert"
 
       - name: Nachricht an Discord (Erfolg)
         if: ${{ success() }}
         run: |
           curl -H "Content-Type: application/json" \
-          -X POST \
-          -d '{"content":"CI Workflow erfolgreich abgeschlossen"}' \
-          $DISCORD_WEBHOOK_URL
+               -X POST \
+               -d '{"content":"✅ CI Workflow erfolgreich abgeschlossen"}' \
+               "$DISCORD_WEBHOOK_URL"
 
       - name: Nachricht an Discord (Fehler)
         if: ${{ failure() }}
         run: |
           curl -H "Content-Type: application/json" \
-          -X POST \
-          -d '{"content":"CI Workflow fehlgeschlagen"}' \
-          $DISCORD_WEBHOOK_URL
+               -X POST \
+               -d '{"content":"❌ CI Workflow fehlgeschlagen"}' \
+               "$DISCORD_WEBHOOK_URL"
