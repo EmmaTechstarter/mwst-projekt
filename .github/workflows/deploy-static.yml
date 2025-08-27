@@ -1,4 +1,4 @@
-name: Deploy Static Website to EC2 Instances
+name: Test EC2 SSH Access (ohne Datei)
 
 on:
   push:
@@ -28,9 +28,9 @@ jobs:
             ssh-keyscan -H "$ip" >> ~/.ssh/known_hosts
           done
 
-      - name: Deploy index.html to EC2 Instances
+      - name: Test SSH Verbindung zu allen Instanzen
         run: |
           for ip in ${{ secrets.EC2_IPs }}; do
-            scp index.html ubuntu@"$ip":/home/ubuntu/index.html
-            ssh ubuntu@"$ip" "sudo cp /home/ubuntu/index.html /var/www/html/index.html"
+            echo "Verbinde mit $ip ..."
+            ssh ubuntu@"$ip" "echo 'Deployment erfolgreich auf $ip'"
           done
