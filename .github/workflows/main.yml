@@ -7,13 +7,34 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./mwst-projekt  # <- Passe das an deinen tatsächlichen Pfad an
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - run: npm ci || npm install
-      - run: npm test
+
+      - name: Check if package.json exists
+        id: check_package
+        run: |
+          if [ -f "package.json" ]; then
+            echo "found=true" >> $GITHUB_OUTPUT
+          else
+            echo "package.json fehlt. Breche ab."
+            echo "found=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Install Dependencies
+        if: steps.check_package.outputs.found == 'true'
+        run: npm ci || npm install
+
+      - name: Run Tests
+        if: steps.check_package.outputs.found == 'true'
+        run: npm test
 
   deploy:
     needs: test
@@ -21,9 +42,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Add SSH key
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-      - run: mkdir -p ~/.ssh && ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-      - run: scp ./mehrwertsteuer.js ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:${{ secrets.EC2_PATH }}
+
+      - name: Add EC2 Host to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to EC2
+        run: scp ./mehrwertsteuer.js ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:${{ secrets.EC2_PATH }}
