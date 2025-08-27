@@ -7,6 +7,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -18,6 +19,11 @@ jobs:
 
       - name: Add all EC2 Hosts to known_hosts
         run: |
+          if [ -z "${{ secrets.EC2_IPs }}" ]; then
+            echo "EC2_IPs secret ist leer oder nicht gesetzt"
+            exit 1
+          fi
+
           for ip in ${{ secrets.EC2_IPs }}; do
             ssh-keyscan -H "$ip" >> ~/.ssh/known_hosts
           done
@@ -25,8 +31,6 @@ jobs:
       - name: Deploy index.html to EC2 Instances
         run: |
           for ip in ${{ secrets.EC2_IPs }}; do
-            echo "Kopiere index.html nach $ip..."
             scp index.html ubuntu@"$ip":/home/ubuntu/index.html
             ssh ubuntu@"$ip" "sudo cp /home/ubuntu/index.html /var/www/html/index.html"
-            echo "Deployment abgeschlossen für $ip"
           done
