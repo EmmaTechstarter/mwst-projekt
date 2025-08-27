@@ -1,4 +1,4 @@
-name: Test EC2 SSH Access (ohne Datei)
+name: Test EC2 SSH Access
 
 on:
   push:
